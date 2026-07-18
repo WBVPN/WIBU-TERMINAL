@@ -62,6 +62,7 @@ fi
 
     // TTYD Anime/Cyberpunk Theme
     const ttyd = spawn('./ttyd', [
+        '-i', '0.0.0.0', // Memaksa IPv4 agar dideteksi oleh Pterodactyl
         '-p', PORT.toString(),
         '-t', 'titleFixed=Wibu Terminal',
         '-t', 'fontSize=15',
@@ -78,7 +79,9 @@ fi
 
     cf.stderr.on('data', data => {
         const str = data.toString();
-        if (str.includes('trycloudflare.com')) {
+        console.log(`[Cloudflared] ${str.trim()}`); // Log semua pesan
+        
+        if (str.includes('trycloudflare.com') && !str.includes('api.trycloudflare.com')) {
             const urlMatch = str.match(/https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com/);
             if (urlMatch) {
                 console.log('\n======================================================');
