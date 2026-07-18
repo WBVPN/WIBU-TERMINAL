@@ -8,13 +8,19 @@ const CLOUDFLARED_URL = 'https://github.com/cloudflare/cloudflared/releases/late
 
 async function downloadFile(url, dest) {
     return new Promise((resolve, reject) => {
-        if (fs.existsSync(dest)) return resolve();
+        if (fs.existsSync(dest) && fs.statSync(dest).size > 1000000) {
+            console.log(`✅ ${path.basename(dest)} sudah ada, melewati download.`);
+            return resolve();
+        }
         console.log(`⏳ Mendownload ${path.basename(dest)}...`);
-        const file = fs.createWriteStream(dest);
         https.get(url, response => {
             if (response.statusCode === 301 || response.statusCode === 302) {
                 return downloadFile(response.headers.location, dest).then(resolve).catch(reject);
             }
+            if (response.statusCode !== 200) {
+                return reject(new Error('Gagal download, status: ' + response.statusCode));
+            }
+            const file = fs.createWriteStream(dest);
             response.pipe(file);
             file.on('finish', () => {
                 file.close();
@@ -23,7 +29,7 @@ async function downloadFile(url, dest) {
                 resolve();
             });
         }).on('error', err => {
-            fs.unlinkSync(dest);
+            if(fs.existsSync(dest)) fs.unlinkSync(dest);
             reject(err);
         });
     });
