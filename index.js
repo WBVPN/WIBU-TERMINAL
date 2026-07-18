@@ -48,6 +48,18 @@ async function start() {
     // Gunakan port dari Pterodactyl agar server dianggap 'Online' dan tidak di-kill paksa
     const PORT = process.env.SERVER_PORT || 8080;
     
+    // Buat script wrapper untuk menjamin terminal terbuka secara interaktif
+    const wrapperScript = `#!/bin/sh
+export PS1="\\[\\e[1;32m\\]WibuHacker\\[\\e[0m\\]:\\[\\e[1;34m\\]\\w\\[\\e[0m\\]\\$ "
+if command -v bash >/dev/null 2>&1; then
+    exec bash -i
+else
+    exec sh -i
+fi
+`;
+    fs.writeFileSync('wibu.sh', wrapperScript);
+    fs.chmodSync('wibu.sh', 0o777);
+
     // TTYD Anime/Cyberpunk Theme
     const ttyd = spawn('./ttyd', [
         '-p', PORT.toString(),
@@ -55,14 +67,8 @@ async function start() {
         '-t', 'fontSize=15',
         '-t', 'fontFamily=Consolas, monospace',
         '-t', 'theme={"background": "#1a1b26", "foreground": "#9ece6a", "cursor": "#f7768e", "black": "#15161E", "red": "#f7768e", "green": "#9ece6a", "yellow": "#e0af68", "blue": "#7aa2f7", "magenta": "#bb9af7", "cyan": "#7dcfff", "white": "#a9b1d6"}',
-        'sh', '-c', 'bash || sh'
-    ], {
-        env: {
-            ...process.env,
-            PS1: "\\[\\e[1;32m\\]WibuHacker\\[\\e[0m\\]:\\[\\e[1;34m\\]\\w\\[\\e[0m\\]\\$ ",
-            TERM: "xterm-256color"
-        }
-    });
+        './wibu.sh'
+    ]);
 
     ttyd.stdout.on('data', d => console.log(`[TTYD] ${d.toString().trim()}`));
     ttyd.stderr.on('data', d => console.log(`[TTYD] ${d.toString().trim()}`));
