@@ -35,3 +35,15 @@ Dengan menggunakan *theme* **Tokyo Night Hacker Anime**, terminal online ini san
 *   **Batas Waktu Link:** Link dari Cloudflare ini bersifat dinamis (sementara). Jika panel Pterodactyl di-restart, link URL-nya akan berubah menjadi yang baru.
 
 > *© 2026 - Dioptimalkan eksklusif untuk WibuVpnStore*
+
+---
+
+## 🛠️ Panduan Mengatasi Masalah (Troubleshooting)
+
+**1. Muncul Error `EACCES` atau "Permission Denied"**
+*   **Penyebab:** Biasanya terjadi jika file `ttyd` atau `cloudflared` yang didownload rusak/kosong karena gangguan jaringan.
+*   **Solusi:** Buka tab **Files** di Pterodactyl, **HAPUS** file bernama `ttyd` dan `cloudflared` (jika ada), lalu klik **Start** lagi agar script mendownload ulang file yang utuh.
+
+**2. Terminal tertutup langsung setelah dibuka**
+*   **Penyebab:** Mesin Pterodactyl Anda mungkin tidak mendukung `bash`.
+*   **Solusi:** Script versi terbaru (V1.1) sudah kami *update* dengan sistem Fallback Anti-Alergi. Pastikan Anda sudah mengunduh file `index.js` versi yang paling baru dari Github ini!
