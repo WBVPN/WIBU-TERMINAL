@@ -45,9 +45,12 @@ async function start() {
 
     console.log('🚀 Menyalakan Anime Web Terminal...');
     
+    // Gunakan port dari Pterodactyl agar server dianggap 'Online' dan tidak di-kill paksa
+    const PORT = process.env.SERVER_PORT || 8080;
+    
     // TTYD Anime/Cyberpunk Theme (Simplified to prevent frontend crash)
     const ttyd = spawn('./ttyd', [
-        '-p', '8080',
+        '-p', PORT.toString(),
         '-t', 'titleFixed=Wibu Terminal',
         'sh', '-c', 'bash || sh'
     ]);
@@ -56,7 +59,7 @@ async function start() {
     ttyd.stderr.on('data', d => console.log(`[TTYD] ${d.toString().trim()}`));
 
     console.log('🌐 Membuka Terowongan Cloudflare (Tunnel)...');
-    const cf = spawn('./cloudflared', ['tunnel', '--url', 'http://localhost:8080']);
+    const cf = spawn('./cloudflared', ['tunnel', '--url', `http://localhost:${PORT}`]);
 
     cf.stderr.on('data', data => {
         const str = data.toString();
